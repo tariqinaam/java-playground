@@ -1,15 +1,18 @@
 package design_pattern.strategy.observer;
 
+import java.util.Observable;
+import java.util.Observer;
+
 public class HeatIndexDisplay implements Observer, DisplayElement {
 
     private float temp;
     private float humidity;
     private float pressure;
-    private Subject weatherData;
+    Observable observable;
 
-    public HeatIndexDisplay(Subject weatherData) {
-        this.weatherData = weatherData;
-        weatherData.registerObserver(this);
+    public HeatIndexDisplay(Observable observable) {
+        this.observable = observable;
+        observable.addObserver(this);
     }
 
     private float computeHeatIndex(float t, float rh) {
@@ -31,10 +34,13 @@ public class HeatIndexDisplay implements Observer, DisplayElement {
     }
 
     @Override
-    public void update(float temp, float humidity, float pressure) {
-        this.temp = temp;
-        this.humidity = humidity;
-        this.pressure = pressure;
+    public void update(Observable obs, Object arg) {
+        if(obs instanceof WeatherData) {
+            WeatherData weatherData = (WeatherData) obs;
+            this.temp = weatherData.getTemp();
+            this.humidity = weatherData.getHumidity();
+            this.pressure = weatherData.getPressure();
+        }
         this.display();
     }
 }
